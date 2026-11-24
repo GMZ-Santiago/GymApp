@@ -1,0 +1,1015 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EDEFF2" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#1A1F2B" media="(prefers-color-scheme: dark)">
+<title>Carga · Keila y Santiago</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@500;700;800;900&family=Public+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    color-scheme:light;
+    --paper:#EDEFF2; --surface:#FFFFFF; --sunken:#F4F5F7;
+    --ink:#15203A; --ink-2:#5A6479; --ink-3:#8C95A8; --rule:#DADEE5;
+    --red:#D7263D; --blue:#1F5BD8; --yellow:#F2B705; --green:#1E9E5A; --white-plate:#F7F8FA; --steel:#A9B0BC;
+    --up:#1E9E5A; --down:#D7263D;
+    --acc:var(--blue); --acc-soft:#E3ECFC; --on-acc:#FFFFFF;
+    --display:"Big Shoulders Display", "Arial Narrow", sans-serif;
+    --text:"Public Sans", system-ui, sans-serif;
+    --shadow:0 1px 0 rgba(21,32,58,.04), 0 8px 24px -12px rgba(21,32,58,.18);
+  }
+  body[data-p="Keila"]{ --acc:var(--red); --acc-soft:#FBE4E7; }
+  @media (prefers-color-scheme: dark){
+    :root{
+      color-scheme:dark;
+      --paper:#1A1F2B; --surface:#232A38; --sunken:#1E2431;
+      --ink:#E8ECF3; --ink-2:#A3ACBF; --ink-3:#717B90; --rule:#343D50;
+      --red:#FF5468; --blue:#5B8CFF; --white-plate:#E9ECF1; --steel:#7D8697;
+      --up:#3DD68C; --down:#FF5468;
+      --acc-soft:#26324D; --shadow:0 10px 30px -14px rgba(0,0,0,.6);
+    }
+    body[data-p="Keila"]{ --acc-soft:#3A2430; }
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    background:var(--paper); color:var(--ink); font-family:var(--text); font-size:16px; line-height:1.45;
+    padding-bottom:calc(92px + env(safe-area-inset-bottom));
+    -webkit-font-smoothing:antialiased;
+  }
+  button,input,select,textarea{font:inherit;color:inherit}
+  button{cursor:pointer}
+  :focus-visible{outline:2.5px solid var(--acc);outline-offset:2px;border-radius:8px}
+  .wrap{max-width:600px;margin:0 auto;padding:0 18px}
+
+  /* ---------- header ---------- */
+  header{padding:calc(14px + env(safe-area-inset-top)) 0 6px}
+  header .wrap{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .brand{font-family:var(--display);font-weight:900;font-size:2rem;letter-spacing:.5px;line-height:1;display:flex;align-items:center;gap:8px}
+  .brand svg{width:30px;height:30px}
+  .people{display:flex;gap:6px;background:var(--surface);padding:4px;border-radius:999px;box-shadow:var(--shadow)}
+  .people button{display:flex;align-items:center;gap:7px;border:0;background:none;padding:7px 13px 7px 8px;border-radius:999px;font-weight:600;font-size:.92rem;color:var(--ink-2);transition:background .2s,color .2s}
+  .people button .disc{width:18px;height:18px;border-radius:50%;background:var(--c);position:relative;opacity:.45;transition:opacity .2s}
+  .people button .disc::after{content:"";position:absolute;inset:6px;border-radius:50%;background:var(--surface)}
+  .people button[aria-pressed="true"]{background:var(--sunken);color:var(--ink)}
+  .people button[aria-pressed="true"] .disc{opacity:1}
+
+  /* ---------- tipografía y bloques ---------- */
+  .tab{display:none;padding-top:14px}
+  .tab.on{display:block}
+  .panel{background:var(--surface);border-radius:22px;padding:20px;box-shadow:var(--shadow);margin-bottom:16px}
+  .block{margin:26px 0 12px;display:flex;align-items:baseline;justify-content:space-between;gap:4px 10px;flex-wrap:wrap}
+  .block h2{font-family:var(--display);font-weight:800;font-size:1.45rem;letter-spacing:.2px}
+  .block .aside{font-size:.85rem;color:var(--ink-3)}
+  .hint{font-size:.88rem;color:var(--ink-2)}
+  .field-label{display:block;font-size:.85rem;font-weight:600;color:var(--ink-2);margin-bottom:7px}
+
+  /* chips de grupo */
+  .chips{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:2px 18px 4px;margin:0 -18px}
+  .chips::-webkit-scrollbar{display:none}
+  .chip{flex:none;border:1px solid var(--rule);background:var(--surface);color:var(--ink-2);padding:8px 14px;border-radius:999px;font-size:.9rem;font-weight:600;transition:all .15s}
+  .chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+
+  /* fecha + ejercicio */
+  .topline{display:flex;align-items:center;justify-content:space-between;gap:8px 10px;margin-bottom:12px;flex-wrap:wrap}
+  .date{display:flex;align-items:center;gap:8px;background:var(--surface);border-radius:999px;padding:6px 6px 6px 14px;box-shadow:var(--shadow);font-weight:600;font-size:.9rem}
+  .date{position:relative;padding:8px 6px 8px 14px}
+  .date .today-dot{width:8px;height:8px;border-radius:50%;background:var(--acc)}
+  .date b{font-weight:700}
+  .date #dateText{font-weight:500;white-space:nowrap}
+  .date.other{box-shadow:0 0 0 2px var(--yellow)}
+  .date.other .today-dot{background:var(--yellow)}
+  .linkbtn{border:0;background:var(--sunken);border-radius:999px;padding:5px 11px;font-weight:600;font-size:.82rem;color:var(--acc);white-space:nowrap}
+  .date input{position:absolute;left:14px;bottom:0;width:1px;height:1px;opacity:0;border:0;pointer-events:none}
+  .date input.show{position:static;width:auto;height:auto;opacity:1;pointer-events:auto;background:var(--sunken);border-radius:999px;padding:4px 10px;font-size:.85rem}
+  .quote{position:relative;background:var(--surface);border-radius:22px;box-shadow:var(--shadow);padding:18px 20px 18px 62px;margin:12px 0 14px;overflow:hidden}
+  .quote::before{content:"\201C";position:absolute;left:14px;top:-4px;font-family:var(--display);font-weight:900;font-size:5.2rem;line-height:1;color:var(--acc)}
+  .quote p{font-family:var(--display);font-weight:700;font-size:1.45rem;line-height:1.12;letter-spacing:.2px;text-wrap:balance}
+  .quote small{display:block;margin-top:8px;font-size:.8rem;color:var(--ink-3)}
+  .mode{font-size:.8rem;color:var(--ink-3);display:flex;align-items:center;gap:6px;white-space:nowrap}
+  .mode i{width:8px;height:8px;border-radius:50%;background:var(--ink-3)}
+  .mode.live i{background:var(--up)}
+  .exline{display:flex;gap:8px;align-items:stretch;margin-top:14px}
+  .exselect{
+    flex:1;appearance:none;-webkit-appearance:none;border:0;background:transparent;
+    font-family:var(--display);font-weight:800;font-size:2.3rem;line-height:1.05;letter-spacing:.2px;padding:2px 34px 2px 0;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238C95A8' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 2px center;background-size:22px;min-width:0;text-overflow:ellipsis
+  }
+  .exselect option{font-family:var(--text);font-size:1rem;font-weight:500;background:var(--surface);color:var(--ink)}
+  .exselect option:checked{background:var(--acc);color:#fff}
+  .iconbtn{flex:none;width:44px;border:1px solid var(--rule);background:var(--surface);border-radius:14px;display:grid;place-items:center;color:var(--ink-2)}
+  .iconbtn svg{width:20px;height:20px}
+  .newex{display:none;gap:8px;margin-top:10px}
+  .newex.show{display:flex}
+  .input{width:100%;border:1px solid var(--rule);background:var(--sunken);border-radius:12px;padding:12px 14px;font-size:1rem}
+  .input:focus{outline:2px solid var(--acc);outline-offset:-1px;background:var(--surface)}
+
+  /* hero: objetivo de hoy */
+  .target{margin-top:16px;padding:22px 20px 18px;position:relative;overflow:hidden}
+  .target::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--acc)}
+  .target .lead{font-size:.92rem;color:var(--ink-2);font-weight:600}
+  .bignum{display:flex;align-items:baseline;gap:10px;font-family:var(--display);line-height:.9;margin:8px 0 4px;flex-wrap:wrap}
+  .bignum .w{font-weight:900;font-size:4.6rem;letter-spacing:-.5px}
+  .bignum .u{font-weight:700;font-size:1.6rem;color:var(--ink-2)}
+  .bignum .x{font-weight:700;font-size:2.2rem;color:var(--ink-3);margin:0 2px}
+  .bignum .r{font-weight:800;font-size:2.8rem}
+  .bignum .reps{display:inline-flex;align-items:baseline;gap:8px;white-space:nowrap}
+  .why{font-size:.95rem;color:var(--ink);margin-top:6px}
+  .bar{margin:16px -4px 2px}
+  .bar svg{width:100%;height:auto;display:block}
+  .bar .cap{font-size:.78rem;color:var(--ink-3);text-align:center;margin-top:4px}
+  .plate{transform-origin:center;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s}
+  .lastline{margin-top:14px;padding-top:14px;border-top:1px dashed var(--rule);font-size:.88rem;color:var(--ink-2);line-height:1.6}
+  .lastline b{color:var(--ink);font-weight:600}
+  .pr{display:inline-flex;align-items:center;gap:5px;background:var(--acc-soft);color:var(--acc);font-weight:700;border-radius:999px;padding:1px 9px;font-size:.82rem;margin-left:2px}
+  .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px}
+  .actions .btn{justify-content:center;padding:11px 8px}
+  .btn{border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:12px;padding:10px 14px;font-weight:600;font-size:.9rem;display:inline-flex;align-items:center;gap:7px}
+  .btn svg{width:16px;height:16px}
+  .btn.ghost{border-color:transparent;background:var(--sunken)}
+  .btn.primary{width:100%;justify-content:center;background:var(--acc);border-color:transparent;color:var(--on-acc);padding:17px;font-size:1.05rem;border-radius:16px;font-weight:700;letter-spacing:.2px}
+  .btn.primary:active{transform:scale(.99)}
+
+  /* bitácora de series */
+  .log{background:var(--surface);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+  .loghead,.setrow{display:grid;grid-template-columns:44px 1fr 1fr 44px;align-items:center}
+  .loghead{font-size:.78rem;color:var(--ink-3);font-weight:600;padding:12px 0 4px}
+  .loghead span{text-align:center}
+  .setrow{border-top:1px solid var(--rule);min-height:64px}
+  .setrow:first-of-type{border-top:0}
+  .setrow .n{font-family:var(--display);font-weight:800;font-size:1.3rem;color:var(--ink-3);text-align:center}
+  .num{width:100%;border:0;background:transparent;text-align:center;font-family:var(--display);font-weight:800;font-size:2rem;padding:10px 4px;-moz-appearance:textfield}
+  .num::-webkit-outer-spin-button,.num::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .num::placeholder{color:var(--rule)}
+  .num:focus{outline:none;background:var(--acc-soft);border-radius:12px}
+  .rm{border:0;background:none;color:var(--ink-3);height:44px;display:grid;place-items:center}
+  .rm svg{width:18px;height:18px}
+  .rm:hover{color:var(--down)}
+  .addset{width:100%;border:0;border-top:1px solid var(--rule);background:var(--sunken);padding:14px;font-weight:600;color:var(--acc);display:flex;justify-content:center;align-items:center;gap:8px}
+  .addset svg{width:18px;height:18px}
+  textarea.input{resize:vertical;min-height:48px;margin:14px 0 14px}
+
+  /* progreso */
+  .headline{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:6px 0 16px}
+  .headline .cur{font-family:var(--display);font-weight:900;font-size:3.4rem;line-height:.9}
+  .headline .cur small{font-size:1.2rem;color:var(--ink-2);font-weight:700;margin-left:4px}
+  .delta{font-weight:700;font-size:.95rem;text-align:right}
+  .delta small{display:block;color:var(--ink-3);font-weight:500;font-size:.8rem}
+  .up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--ink-3)}
+  .seg{display:flex;background:var(--sunken);border-radius:12px;padding:4px;margin-bottom:16px}
+  .seg button{flex:1;border:0;background:none;color:var(--ink-2);padding:9px 4px;border-radius:9px;font-weight:600;font-size:.88rem}
+  .seg button[aria-pressed="true"]{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+  .chartbox{position:relative;height:250px;margin:0 -6px}
+  .figures{display:grid;grid-template-columns:repeat(3,1fr);margin-top:18px;border-top:1px solid var(--rule)}
+  .figures div{padding:14px 4px 0;text-align:center}
+  .figures div + div{border-left:1px solid var(--rule)}
+  .figures b{display:block;font-family:var(--display);font-weight:800;font-size:1.7rem;line-height:1}
+  .figures small{font-size:.8rem;color:var(--ink-3)}
+
+  .rows{background:var(--surface);border-radius:22px;box-shadow:var(--shadow);overflow:hidden}
+  .exrow{display:grid;grid-template-columns:1fr 84px auto;gap:14px;align-items:center;padding:14px 18px;border:0;border-top:1px solid var(--rule);background:none;width:100%;text-align:left}
+  .exrow:first-child{border-top:0}
+  .exrow:hover{background:var(--sunken)}
+  .exrow .t{font-weight:600}
+  .exrow .s{font-size:.8rem;color:var(--ink-3)}
+  .exrow svg{width:84px;height:30px;overflow:visible}
+  .exrow .v{text-align:right;font-family:var(--display);font-weight:800;font-size:1.35rem;line-height:1.1;white-space:nowrap}
+  .exrow .v small{display:block;font-family:var(--text);font-size:.78rem;font-weight:600}
+
+  /* historial */
+  .week{display:grid;grid-template-columns:repeat(3,1fr)}
+  .week div{text-align:center;padding:2px 4px}
+  .week div + div{border-left:1px solid var(--rule)}
+  .week b{display:block;font-family:var(--display);font-weight:900;font-size:2.2rem;line-height:1}
+  .week small{font-size:.8rem;color:var(--ink-3)}
+  .dayhead{display:flex;justify-content:space-between;align-items:baseline;margin:26px 2px 10px;gap:10px}
+  .dayhead h3{font-family:var(--display);font-weight:800;font-size:1.3rem}
+  .dayhead span{font-size:.82rem;color:var(--ink-3);white-space:nowrap}
+  .entry{display:grid;grid-template-columns:4px 1fr auto;gap:14px;padding:14px 16px 14px 0;border-top:1px solid var(--rule)}
+  .entry:first-child{border-top:0}
+  .entry .stripe{border-radius:0 4px 4px 0;background:var(--g)}
+  .entry .t{font-weight:600}
+  .entry .g{font-size:.8rem;color:var(--ink-3);margin-left:6px;font-weight:500}
+  .entry .sets{font-family:var(--display);font-weight:700;font-size:1.15rem;margin-top:3px;color:var(--ink);letter-spacing:.3px}
+  .entry .sets span{color:var(--ink-3);font-weight:600;margin:0 6px}
+  .entry .meta{font-size:.8rem;color:var(--ink-3);margin-top:3px}
+  .entry .nota{font-size:.86rem;color:var(--ink-2);margin-top:6px;font-style:italic}
+  .empty{padding:36px 22px;text-align:center;color:var(--ink-2)}
+  .empty b{display:block;font-family:var(--display);font-size:1.4rem;color:var(--ink);margin-bottom:4px}
+
+  /* nav */
+  nav{position:fixed;left:0;right:0;bottom:0;z-index:10;padding:0 14px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
+  nav .bar-nav{max-width:420px;margin:0 auto;display:flex;background:var(--ink);border-radius:22px;padding:6px;box-shadow:0 14px 36px -12px rgba(21,32,58,.55);pointer-events:auto}
+  nav button{flex:1;border:0;background:none;color:color-mix(in srgb,var(--paper) 60%,transparent);display:flex;flex-direction:column;align-items:center;gap:3px;padding:9px 4px 7px;border-radius:16px;font-size:.76rem;font-weight:600;transition:all .2s}
+  nav button svg{width:22px;height:22px}
+  nav button[aria-current="page"]{background:color-mix(in srgb,var(--paper) 14%,transparent);color:var(--paper)}
+  @media (prefers-color-scheme: dark){ nav .bar-nav{background:#0E121A;border:1px solid var(--rule)} nav button{color:#8790A3} nav button[aria-current="page"]{color:#fff;background:#232A38} }
+
+  .banner{border-radius:14px;padding:12px 14px;font-size:.86rem;margin:10px 0 0;background:color-mix(in srgb,var(--yellow) 18%,var(--surface));border:1px solid color-mix(in srgb,var(--yellow) 50%,transparent)}
+  .banner.err{background:color-mix(in srgb,var(--red) 12%,var(--surface));border-color:color-mix(in srgb,var(--red) 40%,transparent)}
+
+  [hidden]{display:none !important}
+  .gate{position:fixed;inset:0;z-index:50;background:var(--paper);display:grid;place-items:center;padding:24px}
+  .gate-card{width:100%;max-width:380px;text-align:center}
+  .gate-card svg{width:72px;height:72px;margin-bottom:14px}
+  .gate-card h2{font-family:var(--display);font-weight:900;font-size:3rem;line-height:1;margin-bottom:10px}
+  .gate-card p{color:var(--ink-2);margin-bottom:24px;text-wrap:balance}
+  .gate-card .btn.primary{gap:10px}
+  .gate-card .btn.primary svg{width:20px;height:20px;margin:0}
+  .mode .linkbtn{margin-left:4px}
+  .toast{position:fixed;left:50%;bottom:calc(104px + env(safe-area-inset-bottom));transform:translate(-50%,16px);opacity:0;background:var(--surface);color:var(--ink);box-shadow:0 16px 40px -12px rgba(0,0,0,.35);border-radius:16px;padding:13px 18px 13px 14px;font-weight:600;display:flex;align-items:center;gap:12px;transition:.3s cubic-bezier(.2,.8,.2,1);z-index:30;max-width:calc(100vw - 32px);pointer-events:none}
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  .toast .mark{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--acc);color:#fff}
+  .toast .mark svg{width:16px;height:16px}
+  .toast.pr .mark{background:var(--yellow);color:#15203A}
+
+  @media (min-width:700px){ .bignum .w{font-size:5.6rem} }
+  @media (prefers-reduced-motion: reduce){ *{transition:none !important;animation:none !important} }
+</style>
+</head>
+<body data-p="Santiago">
+
+<header>
+  <div class="wrap">
+    <div class="brand" aria-label="Carga">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="var(--acc)"/><circle cx="16" cy="16" r="10.5" fill="none" stroke="var(--paper)" stroke-opacity=".35" stroke-width="1.5"/><circle cx="16" cy="16" r="3.4" fill="var(--paper)"/></svg>
+      Carga
+    </div>
+    <div class="people" id="people" role="group" aria-label="Persona">
+      <button data-p="Keila" style="--c:var(--red)" aria-pressed="false"><span class="disc"></span>Keila</button>
+      <button data-p="Santiago" style="--c:var(--blue)" aria-pressed="false"><span class="disc"></span>Santiago</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <div id="banner"></div>
+
+  <!-- ========== REGISTRAR ========== -->
+  <section class="tab on" id="tab-registrar" aria-label="Registrar">
+    <div class="quote" id="quote"></div>
+    <div class="topline">
+      <div class="date" id="dateBox">
+        <span class="today-dot"></span>
+        <span id="dateText"></span>
+        <button class="linkbtn" id="btnDate">Cambiar</button>
+        <input type="date" id="fecha" aria-label="Fecha del entrenamiento">
+      </div>
+      <span class="mode" id="mode"><i></i><span>Conectando</span></span>
+    </div>
+    <div class="chips" id="grupos" role="group" aria-label="Grupo muscular"></div>
+
+    <div class="exline">
+      <select id="ejercicio" class="exselect" aria-label="Ejercicio"></select>
+      <button class="iconbtn" id="btnNewEx" aria-label="Agregar ejercicio nuevo" title="Agregar ejercicio nuevo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+    <div class="newex" id="newex">
+      <input class="input" id="newexName" placeholder="Nombre del ejercicio" autocomplete="off">
+      <button class="btn" id="btnSaveEx">Agregar</button>
+    </div>
+
+    <div class="panel target" id="target"></div>
+
+    <div class="block"><h2>Series de hoy</h2><span class="aside" id="setsum"></span></div>
+    <div class="log">
+      <div class="loghead"><span></span><span>Peso (kg)</span><span>Reps</span><span></span></div>
+      <div id="sets"></div>
+      <button class="addset" id="btnAddSet">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Agregar serie
+      </button>
+    </div>
+    <textarea class="input" id="nota" rows="1" placeholder="Nota opcional: sensaciones, técnica, molestias"></textarea>
+    <button class="btn primary" id="btnGuardar">Guardar ejercicio</button>
+  </section>
+
+  <!-- ========== PROGRESO ========== -->
+  <section class="tab" id="tab-progreso" aria-label="Progreso">
+    <div class="panel">
+      <select id="pej" class="exselect" aria-label="Ejercicio a analizar" style="font-size:1.9rem"></select>
+      <div class="headline" id="headline"></div>
+      <div class="seg" id="metric" role="group" aria-label="Métrica">
+        <button data-m="top" aria-pressed="true">Peso máximo</button>
+        <button data-m="e1rm" aria-pressed="false">1RM estimado</button>
+        <button data-m="vol" aria-pressed="false">Volumen</button>
+      </div>
+      <div class="chartbox"><canvas id="chart" aria-label="Gráfico de progreso" role="img"></canvas></div>
+      <div class="figures" id="figures"></div>
+    </div>
+
+    <div class="block"><h2>Todos tus ejercicios</h2></div>
+    <div class="chips" id="pgrupos" role="group" aria-label="Filtrar por grupo" style="margin-bottom:12px"></div>
+    <div class="rows" id="resumen"></div>
+  </section>
+
+  <!-- ========== HISTORIAL ========== -->
+  <section class="tab" id="tab-historial" aria-label="Historial">
+    <div class="panel"><p class="hint" style="margin-bottom:12px">Últimos 7 días</p><div class="week" id="semana"></div></div>
+    <div class="chips" id="hgrupos" role="group" aria-label="Filtrar por grupo"></div>
+    <div id="historial"></div>
+  </section>
+</main>
+
+<nav aria-label="Secciones">
+  <div class="bar-nav" id="tabs">
+    <button data-tab="registrar" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5v11M17.5 6.5v11M3 9.5v5M21 9.5v5M6.5 12h11"/></svg>
+      Registrar
+    </button>
+    <button data-tab="progreso">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 6-7"/></svg>
+      Progreso
+    </button>
+    <button data-tab="historial">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M3 9.5h18M8 2.5v4M16 2.5v4"/></svg>
+      Historial
+    </button>
+  </div>
+</nav>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<div class="gate" id="gate" hidden>
+  <div class="gate-card">
+    <svg viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="15" fill="var(--acc)"/><circle cx="16" cy="16" r="10.5" fill="none" stroke="var(--paper)" stroke-opacity=".35" stroke-width="1.5"/><circle cx="16" cy="16" r="3.4" fill="var(--paper)"/></svg>
+    <h2>Carga</h2>
+    <p id="gateMsg">Entrá con tu cuenta de Google para ver y cargar tus entrenamientos.</p>
+    <button class="btn primary" id="btnLogin">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#fff" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.8h5.4a4.6 4.6 0 0 1-2 3v2.5h3.2c1.9-1.7 3-4.3 3-7.3Z"/><path fill="#fff" opacity=".85" d="M12 22c2.7 0 5-.9 6.6-2.4l-3.2-2.5c-.9.6-2 1-3.4 1-2.6 0-4.8-1.8-5.6-4.1H3.1v2.6A10 10 0 0 0 12 22Z"/><path fill="#fff" opacity=".7" d="M6.4 14a6 6 0 0 1 0-3.9V7.5H3.1a10 10 0 0 0 0 9.1L6.4 14Z"/><path fill="#fff" opacity=".85" d="M12 6c1.5 0 2.8.5 3.8 1.5l2.9-2.9A10 10 0 0 0 3.1 7.5l3.3 2.6C7.2 7.8 9.4 6 12 6Z"/></svg>
+      <span id="btnLoginTxt">Entrar con Google</span>
+    </button>
+  </div>
+</div>
+
+<script type="module">
+/* =========================================================
+   CONFIGURACIÓN DE FIREBASE
+   Consola de Firebase → Configuración del proyecto → Tus apps → Web.
+   Mientras apiKey diga "TU_API_KEY", la app guarda los datos solo
+   en este navegador (modo local).
+   ========================================================= */
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO",
+  storageBucket: "TU_PROYECTO.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:xxxxxxxxxxxx"
+};
+
+/* Emails de Google que pueden entrar, y a qué persona corresponde cada uno.
+   Tienen que coincidir con los de las reglas de Firestore. */
+const USUARIOS = {
+  "keila@gmail.com": "Keila",
+  "santiago@gmail.com": "Santiago"
+};
+
+const FB_VER = "10.12.2";
+const PERSONAS = ["Keila", "Santiago"];
+const DEFAULTS = {
+  "Pecho": ["Press banca", "Press inclinado con mancuernas", "Aperturas", "Cruce de poleas", "Fondos"],
+  "Espalda": ["Dominadas", "Jalón al pecho", "Remo con barra", "Remo en polea baja", "Peso muerto"],
+  "Piernas": ["Sentadilla", "Prensa", "Peso muerto rumano", "Extensión de cuádriceps", "Curl femoral", "Gemelos"],
+  "Glúteos": ["Hip thrust", "Sentadilla búlgara", "Patada de glúteo en polea", "Abducción en máquina"],
+  "Hombros": ["Press militar", "Elevaciones laterales", "Pájaros", "Face pull"],
+  "Bíceps": ["Curl con barra", "Curl martillo", "Curl predicador"],
+  "Tríceps": ["Extensión en polea", "Press francés", "Fondos en banco"],
+  "Core": ["Plancha", "Crunch en polea", "Elevación de piernas"]
+};
+const GRUPOS = Object.keys(DEFAULTS);
+const FRASES = [
+  "No tenés que tener ganas. Tenés que venir.",
+  "Un kilo más que la semana pasada también es progreso.",
+  "La constancia le gana al talento que no entrena.",
+  "Hoy cuesta. En tres meses vas a agradecer haber venido.",
+  "La última repetición es la que te cambia.",
+  "Nadie se arrepiente de un entrenamiento terminado.",
+  "Pequeños aumentos, todas las semanas. Así se construye.",
+  "El cuerpo se adapta a lo que le pedís. Pedile un poco más.",
+  "Disciplina es hacerlo igual cuando nadie te mira.",
+  "No compitas con nadie más que con tu registro de la semana pasada.",
+  "Cada serie anotada es una prueba de que estás avanzando.",
+  "Lo difícil de hoy es el calentamiento de mañana.",
+  "Entrenar mal un día es mejor que no entrenar.",
+  "Buena técnica primero, peso después.",
+  "El progreso no siempre se ve en el espejo. Mirá tus números.",
+  "Una repetición más. Siempre hay una más.",
+  "Si fuera fácil, todos lo harían.",
+  "Venir ya es la mitad del entrenamiento.",
+  "Tu yo del mes que viene te está mirando.",
+  "Descansá si hace falta, pero no abandones.",
+  "La fuerza se construye de a 2,5 kilos.",
+  "No busques motivación: armá el hábito.",
+  "Lo que hoy es tu máximo, mañana va a ser tu calentamiento.",
+  "Respirá, apretá y empujá.",
+  "Los resultados llegan a quienes no cortan la racha.",
+  "Hacelo por la persona que vas a ser.",
+  "La incomodidad es el lugar donde se crece.",
+  "Sin excusas, solo series.",
+  "Un buen día de entrenamiento empieza con decidir venir.",
+  "El peso no sabe si estás cansado. Levantalo igual.",
+  "Paciencia: los músculos se hacen en meses, no en días.",
+  "Hoy sumá algo: un kilo, una repetición o una serie.",
+  "La mejor rutina es la que cumplís.",
+  "Lo que no se anota, no se mejora.",
+  "Cada entrenamiento suma, aunque no lo sientas.",
+  "Ponete objetivos que te den un poco de miedo.",
+  "No pares cuando te canses. Pará cuando termines.",
+  "Entrenar es un regalo para tu cuerpo, no un castigo.",
+  "Tu única competencia está en el historial de esta app.",
+  "Hoy es un buen día para romper un récord.",
+  "Sentite orgulloso de cada vez que no te salteaste un día.",
+  "La fuerza mental se entrena igual que la física.",
+  "Empezá liviano, terminá fuerte.",
+  "El cansancio pasa. El progreso queda.",
+  "Ser constante es más importante que ser perfecto.",
+  "Mañana te vas a alegrar de haber venido hoy.",
+  "Primero se vuelve hábito, después se vuelve parte de vos.",
+  "Cada repetición limpia vale más que dos a medias.",
+  "Lo lograste ayer. Hoy podés un poco más.",
+  "La sobrecarga progresiva no perdona la pereza, pero premia la paciencia.",
+  "Menos pensar, más levantar.",
+  "No es suerte: es trabajo acumulado.",
+  "Que tu entrenamiento hable por vos.",
+  "Si te cuesta, es porque está funcionando.",
+  "Hacé hoy lo que tu yo de mañana te va a agradecer.",
+  "El primer paso es entrar. Lo demás sale.",
+  "Entrená con intención, no por inercia.",
+  "Los días malos también cuentan.",
+  "Tus números no mienten: seguí sumando.",
+  "Una semana a la vez, una serie a la vez."
+];
+const GROUP_COLOR = { "Pecho":"var(--red)", "Espalda":"var(--blue)", "Piernas":"var(--yellow)", "Glúteos":"var(--green)", "Hombros":"var(--red)", "Bíceps":"var(--blue)", "Tríceps":"var(--yellow)", "Core":"var(--green)" };
+const BARBELL = /barra|banca|sentadilla(?! búlgara)|peso muerto|militar|hip thrust|rumano/i;
+
+/* ---------- utilidades ---------- */
+const $ = s => document.querySelector(s);
+const lsGet = k => { try { return localStorage.getItem(k); } catch { return null; } };
+const lsSet = (k, v) => { try { localStorage.setItem(k, v); } catch {} };
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
+const f = n => Number(n).toLocaleString("es-AR", { maximumFractionDigits: 1 });
+const today = () => new Date().toLocaleDateString("en-CA");
+const dDate = s => new Date(s + "T00:00:00");
+const fmtDay = s => {
+  const d = daysAgo(s);
+  if (d === 0) return "Hoy"; if (d === 1) return "Ayer";
+  const t = dDate(s).toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" });
+  return t.charAt(0).toUpperCase() + t.slice(1);
+};
+const longDate = s => dDate(s).toLocaleDateString("es-AR", { weekday: "long", day: "numeric", month: "long" }).replace(",", "");
+const dayNumber = () => { const d = new Date(); return Math.floor(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()) / 86400000); };
+const fmtShort = s => dDate(s).toLocaleDateString("es-AR", { day: "numeric", month: "short" }).replace(".", "");
+const daysAgo = s => Math.round((dDate(today()) - dDate(s)) / 86400000);
+const rel = s => { const d = daysAgo(s); return d === 0 ? "hoy" : d === 1 ? "ayer" : d < 0 ? `el ${fmtShort(s)}` : `hace ${d} días`; };
+const cssVar = n => getComputedStyle(document.body).getPropertyValue(n).trim();
+const ICON = {
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg>',
+  trophy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v5a4 4 0 0 1-8 0V4ZM8 6H4.5a3 3 0 0 0 3.5 4M16 6h3.5a3 3 0 0 1-3.5 4M12 13v4M8.5 20h7"/></svg>',
+  x: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6 6 18"/></svg>',
+  repeat: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 2l3 3-3 3"/><path d="M4 11V9a4 4 0 0 1 4-4h12M7 22l-3-3 3-3"/><path d="M20 13v2a4 4 0 0 1-4 4H4"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg>'
+};
+
+let toastT;
+function toast(msg, kind = "ok") {
+  const t = $("#toast");
+  t.className = "toast " + (kind === "pr" ? "pr" : "");
+  t.innerHTML = `<span class="mark">${kind === "pr" ? ICON.trophy : kind === "err" ? ICON.x : ICON.check}</span><span>${esc(msg)}</span>`;
+  requestAnimationFrame(() => t.classList.add("show"));
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove("show"), 2800);
+}
+
+/* ---------- métricas ---------- */
+const top  = e => Math.max(...e.series.map(s => s.peso));
+const e1rm = e => Math.max(...e.series.map(s => s.reps > 1 ? s.peso * (1 + s.reps / 30) : s.peso)); // fórmula de Epley
+const vol  = e => e.series.reduce((a, s) => a + s.peso * s.reps, 0);
+const METRICS = {
+  top:  { fn: top,  agg: "max", unit: "kg", name: "peso máximo" },
+  e1rm: { fn: e1rm, agg: "max", unit: "kg", name: "1RM estimado" },
+  vol:  { fn: vol,  agg: "sum", unit: "kg", name: "volumen" }
+};
+const byDate = (a, b) => a.fecha < b.fecha ? -1 : a.fecha > b.fecha ? 1 : (a.ts || 0) - (b.ts || 0);
+const history = ex => entries.filter(e => e.ejercicio === ex).sort(byDate);
+
+function suggestion(h) {
+  if (!h.length) return null;
+  const last = h[h.length - 1], t = top(last);
+  const minR = Math.min(...last.series.filter(s => s.peso === t).map(s => s.reps));
+  if (t === 0) return { peso: 0, reps: minR + 1, why: "Peso corporal: sumá una repetición a tu mejor serie." };
+  if (minR >= 12) {
+    const inc = t < 20 ? 1 : 2.5;
+    return { peso: t + inc, reps: 8, why: `Llegaste a ${minR} repeticiones con ${f(t)} kg. Toca subir el peso y volver a 8.` };
+  }
+  return { peso: t, reps: minR + 1, why: `Mismo peso, una repetición más. Cuando llegues a 12, subís la carga.` };
+}
+
+/* ---------- capa de datos ---------- */
+async function makeStore() {
+  const configured = firebaseConfig.apiKey && !firebaseConfig.apiKey.startsWith("TU_");
+  if (!configured) return localStore();
+  const { initializeApp } = await import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-app.js`);
+  const fs = await import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-firestore.js`);
+  const au = await import(`https://www.gstatic.com/firebasejs/${FB_VER}/firebase-auth.js`);
+  const app = initializeApp(firebaseConfig);
+  const auth = au.getAuth(app);
+  let db;
+  try { db = fs.initializeFirestore(app, { localCache: fs.persistentLocalCache() }); } // guarda sin señal y sincroniza después
+  catch { db = fs.getFirestore(app); }
+  const onErr = err => showBanner(`Firebase rechazó la conexión (${esc(err.code || err.message)}). Revisá las reglas de Firestore.`, true);
+  return {
+    mode: "firebase",
+    auth: {
+      onChange: cb => au.onAuthStateChanged(auth, cb),
+      signIn: () => { const pr = new au.GoogleAuthProvider(); pr.setCustomParameters({ prompt: "select_account" }); return au.signInWithPopup(auth, pr); },
+      signOut: () => au.signOut(auth)
+    },
+    listenEntries(p, cb) {
+      const q = fs.query(fs.collection(db, "entrenamientos"), fs.where("persona", "==", p));
+      return fs.onSnapshot(q, s => cb(s.docs.map(d => ({ id: d.id, ...d.data() }))), onErr);
+    },
+    listenExercises: cb => fs.onSnapshot(fs.collection(db, "ejercicios"), s => cb(s.docs.map(d => ({ id: d.id, ...d.data() }))), onErr),
+    addEntry: e => fs.addDoc(fs.collection(db, "entrenamientos"), e),
+    removeEntry: id => fs.deleteDoc(fs.doc(db, "entrenamientos", id)),
+    addExercise: x => fs.addDoc(fs.collection(db, "ejercicios"), x)
+  };
+}
+
+function localStore() {
+  const KEY = "gymlog_data_v1";
+  let mem = { entrenamientos: [], ejercicios: [] };
+  try { const r = localStorage.getItem(KEY); if (r) mem = JSON.parse(r); } catch {}
+  const subs = new Set();
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(mem)); } catch {} subs.forEach(fn => fn()); };
+  const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+  const sub = fn => { subs.add(fn); fn(); return () => subs.delete(fn); };
+  return {
+    mode: "local",
+    listenEntries: (p, cb) => sub(() => cb(mem.entrenamientos.filter(e => e.persona === p).map(e => ({ ...e })))),
+    listenExercises: cb => sub(() => cb(mem.ejercicios.slice())),
+    addEntry: async e => { mem.entrenamientos.push({ id: uid(), ...e }); save(); },
+    removeEntry: async id => { mem.entrenamientos = mem.entrenamientos.filter(e => e.id !== id); save(); },
+    addExercise: async x => { mem.ejercicios.push({ id: uid(), ...x }); save(); }
+  };
+}
+
+/* ---------- estado ---------- */
+let store, chart, unsubEntries;
+let persona = PERSONAS.includes(lsGet("gymlog_persona")) ? lsGet("gymlog_persona") : "Santiago";
+let entries = [], customEx = [];
+let sets = [{ peso: "", reps: "" }];
+let grupo = GRUPOS[0], pgrupo = "", hgrupo = "";
+let selEx = "", metric = "top", currentTab = "registrar";
+let fechaManual = false;
+let unsubEx = null;
+
+function showBanner(html, err = false) { $("#banner").innerHTML = `<div class="banner ${err ? "err" : ""}">${html}</div>`; }
+
+function exList(g) {
+  const s = new Set(DEFAULTS[g] || []);
+  customEx.filter(x => x.grupo === g).forEach(x => s.add(x.nombre));
+  entries.filter(e => e.grupo === g).forEach(e => s.add(e.ejercicio));
+  return [...s];
+}
+
+function chipRow(el, value, withAll) {
+  const items = (withAll ? [["", "Todos"]] : []).concat(GRUPOS.map(g => [g, g]));
+  el.innerHTML = items.map(([v, l]) => `<button class="chip" data-v="${esc(v)}" aria-pressed="${v === value}">${esc(l)}</button>`).join("");
+}
+
+/* ---------- barra con discos ---------- */
+const PLATES = [
+  { kg: 25, c: "var(--red)", w: 13, h: 76 }, { kg: 20, c: "var(--blue)", w: 12, h: 76 },
+  { kg: 15, c: "var(--yellow)", w: 11, h: 76 }, { kg: 10, c: "var(--green)", w: 10, h: 76 },
+  { kg: 5, c: "var(--white-plate)", w: 8, h: 50 }, { kg: 2.5, c: "var(--red)", w: 7, h: 38 },
+  { kg: 1.25, c: "var(--steel)", w: 6, h: 30 }
+];
+function barbellSVG(total) {
+  let side = (total - 20) / 2; const load = [];
+  for (const p of PLATES) while (side >= p.kg - 1e-9) { load.push(p); side -= p.kg; }
+  const H = 90, cy = H / 2; let svg = "";
+  svg += `<rect x="0" y="${cy - 5}" width="360" height="10" rx="3" fill="var(--steel)" opacity=".55"/>`;
+  svg += `<rect x="100" y="${cy - 3}" width="160" height="6" fill="var(--steel)"/>`;
+  svg += `<rect x="94" y="${cy - 12}" width="6" height="24" rx="2" fill="var(--steel)"/><rect x="260" y="${cy - 12}" width="6" height="24" rx="2" fill="var(--steel)"/>`;
+  let xr = 268, xl = 92;
+  load.forEach((p, i) => {
+    const stroke = p.kg === 5 ? `stroke="var(--rule)" stroke-width="1"` : "";
+    svg += `<rect class="plate" style="transition-delay:${i * 40}ms" x="${xr}" y="${cy - p.h / 2}" width="${p.w}" height="${p.h}" rx="2.5" fill="${p.c}" ${stroke}/>`;
+    svg += `<rect class="plate" style="transition-delay:${i * 40}ms" x="${xl - p.w}" y="${cy - p.h / 2}" width="${p.w}" height="${p.h}" rx="2.5" fill="${p.c}" ${stroke}/>`;
+    xr += p.w + 1.5; xl -= p.w + 1.5;
+  });
+  const per = load.map(p => p.kg.toLocaleString("es-AR")).join(" + ");
+  return `<svg viewBox="0 0 360 ${H}" role="img" aria-label="Barra cargada con ${f(total)} kilos">${svg}</svg>
+    <div class="cap">${load.length ? `Por lado: ${per} kg, en barra de 20 kg` : "Solo la barra de 20 kg"}${side > 0.01 ? ` (faltan ${f(side * 2)} kg para el total exacto)` : ""}</div>`;
+}
+
+/* ---------- REGISTRAR ---------- */
+function renderGrupos() { chipRow($("#grupos"), grupo, false); }
+
+function renderExSelect() {
+  const sel = $("#ejercicio"), prev = sel.value, list = exList(grupo);
+  sel.innerHTML = list.map(x => `<option>${esc(x)}</option>`).join("");
+  if (list.includes(prev)) sel.value = prev;
+}
+
+function renderTarget() {
+  const ex = $("#ejercicio").value, h = history(ex), box = $("#target");
+  const sug = suggestion(h);
+  if (!sug) {
+    box.innerHTML = `
+      <div class="lead">Primera vez con este ejercicio</div>
+      <div class="bignum"><span class="w">—</span></div>
+      <p class="why">Elegí un peso que puedas mover 10 veces con buena técnica. A partir de la próxima sesión, acá vas a ver qué te toca.</p>`;
+    return;
+  }
+  const last = h[h.length - 1], pr = Math.max(...h.map(top));
+  const showBar = BARBELL.test(ex) && sug.peso >= 20;
+  box.innerHTML = `
+    <div class="lead">Hoy apuntá a</div>
+    <div class="bignum">
+      ${sug.peso > 0 ? `<span class="w">${f(sug.peso)}</span><span class="u">kg</span>` : `<span class="u">Peso corporal</span>`}
+      <span class="reps"><span class="x">×</span><span class="r">${sug.reps}</span><span class="u">reps</span></span>
+    </div>
+    <p class="why">${esc(sug.why)}</p>
+    ${showBar ? `<div class="bar">${barbellSVG(sug.peso)}</div>` : ""}
+    <div class="lastline">
+      Última vez ${rel(last.fecha)}: <b>${last.series.map(s => `${f(s.peso)}×${s.reps}`).join(", ")}</b>
+      <span class="pr">${ICON.trophy.replace('<svg', '<svg width="12" height="12"')} Récord ${f(pr)} kg</span>
+      ${last.nota ? `<br><i>“${esc(last.nota)}”</i>` : ""}
+    </div>
+    <div class="actions">
+      <button class="btn" data-act="sug">${ICON.target} Cargar objetivo</button>
+      <button class="btn ghost" data-act="rep">${ICON.repeat} Repetir la última</button>
+    </div>`;
+}
+
+function renderSets() {
+  $("#sets").innerHTML = sets.map((s, i) => `
+    <div class="setrow" data-i="${i}">
+      <span class="n">${i + 1}</span>
+      <input class="num" type="number" inputmode="decimal" step="0.5" min="0" placeholder="0" data-k="peso" value="${esc(s.peso)}" aria-label="Peso de la serie ${i + 1}">
+      <input class="num" type="number" inputmode="numeric" step="1" min="0" placeholder="0" data-k="reps" value="${esc(s.reps)}" aria-label="Repeticiones de la serie ${i + 1}">
+      <button class="rm" data-del="${i}" aria-label="Quitar serie ${i + 1}">${ICON.x}</button>
+    </div>`).join("");
+  renderSetSum();
+}
+function parsedSets() {
+  return sets.map(s => ({ peso: parseFloat(String(s.peso).replace(",", ".")), reps: parseInt(s.reps, 10) }))
+             .filter(s => !isNaN(s.peso) && s.peso >= 0 && s.reps > 0);
+}
+function renderSetSum() {
+  const p = parsedSets();
+  $("#setsum").textContent = p.length ? `${p.length} ${p.length === 1 ? "serie" : "series"}, ${f(p.reduce((a, s) => a + s.peso * s.reps, 0))} kg de volumen` : "";
+}
+
+async function guardar() {
+  const ex = $("#ejercicio").value, fecha = $("#fecha").value || today();
+  const series = parsedSets();
+  if (!ex) return toast("Elegí un ejercicio antes de guardar", "err");
+  if (!series.length) return toast("Cargá al menos una serie con peso y repeticiones", "err");
+  const h = history(ex);
+  const prevMax = h.length ? Math.max(...h.map(top)) : null;
+  const t = Math.max(...series.map(s => s.peso));
+  const entry = { persona, fecha, grupo, ejercicio: ex, series, nota: $("#nota").value.trim(), ts: Date.now() };
+  store.addEntry(entry).catch(err => toast("No se pudo guardar: " + err.message, "err"));
+  if (prevMax !== null && t > prevMax) toast(`Nuevo récord en ${ex}: ${f(t)} kg`, "pr");
+  else toast(`${ex} guardado`);
+  sets = [{ peso: "", reps: "" }];
+  renderSets();
+  $("#nota").value = "";
+}
+
+/* ---------- PROGRESO ---------- */
+function loggedExercises(g = "") {
+  const s = new Set(); entries.forEach(e => { if (!g || e.grupo === g) s.add(e.ejercicio); });
+  return [...s].sort((a, b) => a.localeCompare(b, "es"));
+}
+function series(ex, mKey) {
+  const M = METRICS[mKey], byDay = new Map();
+  history(ex).forEach(e => {
+    const v = M.fn(e), p = byDay.get(e.fecha);
+    byDay.set(e.fecha, p === undefined ? v : (M.agg === "sum" ? p + v : Math.max(p, v)));
+  });
+  return { labels: [...byDay.keys()], data: [...byDay.values()].map(v => Math.round(v * 10) / 10) };
+}
+
+function renderProgress() {
+  const exs = loggedExercises(), sel = $("#pej");
+  if (!exs.includes(selEx)) selEx = exs.includes($("#ejercicio").value) ? $("#ejercicio").value : (exs[0] || "");
+  sel.innerHTML = exs.length ? exs.map(x => `<option>${esc(x)}</option>`).join("") : `<option value="">Sin registros todavía</option>`;
+  sel.value = selEx;
+  renderChart(); renderResumen();
+}
+
+function deltaHTML(a, b, unit = "kg") {
+  const d = b - a, pct = a ? (d / a) * 100 : 0;
+  const cls = d > 0 ? "up" : d < 0 ? "down" : "flat";
+  return { cls, txt: `${d > 0 ? "+" : ""}${f(d)} ${unit}`, pct: `${d > 0 ? "+" : ""}${f(pct)}%` };
+}
+
+function renderChart() {
+  const { labels, data } = series(selEx, metric);
+  if (chart) { chart.destroy(); chart = null; }
+
+  if (!data.length) {
+    $("#headline").innerHTML = "";
+    $("#figures").innerHTML = "";
+    $("#chart").style.display = "none";
+    if (!$("#chartEmpty")) $(".chartbox").insertAdjacentHTML("beforeend", `<div class="empty" id="chartEmpty"><b>Todavía no hay datos</b>Registrá un ejercicio y acá vas a ver cómo evoluciona.</div>`);
+    return;
+  }
+  $("#chartEmpty")?.remove();
+  $("#chart").style.display = "";
+
+  const first = data[0], last = data[data.length - 1], best = Math.max(...data);
+  const d = deltaHTML(first, last);
+  $("#headline").innerHTML = `
+    <div class="cur">${f(last)}<small>kg</small></div>
+    <div class="delta ${d.cls}">${d.txt} (${d.pct})<small>desde el ${fmtShort(labels[0])}</small></div>`;
+  $("#figures").innerHTML = `
+    <div><b>${f(best)}</b><small>Mejor marca</small></div>
+    <div><b>${data.length}</b><small>Sesiones</small></div>
+    <div><b>${fmtShort(labels[labels.length - 1])}</b><small>Última sesión</small></div>`;
+
+  if (window.Chart && currentTab === "progreso") {
+    const acc = cssVar("--acc") || "#1F5BD8", grid = cssVar("--rule"), tick = cssVar("--ink-3"), surf = cssVar("--surface");
+    const ctx = $("#chart").getContext("2d");
+    const grad = ctx.createLinearGradient(0, 0, 0, 250);
+    grad.addColorStop(0, acc + "33"); grad.addColorStop(1, acc + "00");
+    chart = new Chart(ctx, {
+      type: "line",
+      data: { labels: labels.map(fmtShort), datasets: [{
+        data, borderColor: acc, backgroundColor: grad, fill: true, tension: .35, borderWidth: 3,
+        pointRadius: data.map(v => v === best ? 6 : 3.5), pointBackgroundColor: data.map(v => v === best ? acc : surf),
+        pointBorderColor: acc, pointBorderWidth: 2, pointHoverRadius: 7
+      }]},
+      options: {
+        maintainAspectRatio: false, interaction: { intersect: false, mode: "index" },
+        plugins: { legend: { display: false }, tooltip: {
+          backgroundColor: cssVar("--ink"), titleColor: cssVar("--paper"), bodyColor: cssVar("--paper"),
+          padding: 10, cornerRadius: 10, displayColors: false,
+          titleFont: { family: "Public Sans", weight: "600" }, bodyFont: { family: "Big Shoulders Display", size: 18, weight: "800" },
+          callbacks: { label: c => `${f(c.parsed.y)} kg` } } },
+        scales: {
+          x: { ticks: { color: tick, maxRotation: 0, autoSkip: true, maxTicksLimit: 6, font: { family: "Public Sans", size: 11 } }, grid: { display: false }, border: { display: false } },
+          y: { ticks: { color: tick, maxTicksLimit: 5, font: { family: "Public Sans", size: 11 }, callback: v => f(v) }, grid: { color: grid }, border: { display: false } }
+        }
+      }
+    });
+  }
+}
+
+function sparkline(vals) {
+  if (vals.length < 2) return `<svg viewBox="0 0 84 30"><circle cx="42" cy="15" r="3" fill="var(--acc)"/></svg>`;
+  const mn = Math.min(...vals), mx = Math.max(...vals), r = mx - mn || 1;
+  const pts = vals.map((v, i) => [ (i / (vals.length - 1)) * 84, 26 - ((v - mn) / r) * 22 ]);
+  const [lx, ly] = pts[pts.length - 1];
+  return `<svg viewBox="0 0 84 30" aria-hidden="true"><polyline points="${pts.map(p => p.join(",")).join(" ")}" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/><circle cx="${lx}" cy="${ly}" r="3" fill="var(--acc)"/></svg>`;
+}
+
+function renderResumen() {
+  chipRow($("#pgrupos"), pgrupo, true);
+  const rows = loggedExercises(pgrupo).map(ex => {
+    const h = history(ex), s = series(ex, "top").data;
+    return { ex, grupo: h[h.length - 1].grupo, s, fecha: h[h.length - 1].fecha };
+  }).sort((a, b) => a.fecha < b.fecha ? 1 : a.fecha > b.fecha ? -1 : 0);
+  $("#resumen").innerHTML = rows.length ? rows.map(r => {
+    const d = deltaHTML(r.s[0], r.s[r.s.length - 1]);
+    return `<button class="exrow" data-ex="${esc(r.ex)}">
+      <div><div class="t">${esc(r.ex)}</div><div class="s">${esc(r.grupo)}, ${rel(r.fecha)}</div></div>
+      ${sparkline(r.s)}
+      <div class="v">${f(r.s[r.s.length - 1])} kg<small class="${d.cls}">${r.s.length > 1 ? d.txt : "1 sesión"}</small></div>
+    </button>`;
+  }).join("") : `<div class="empty"><b>Nada por acá</b>${pgrupo ? `Todavía no registraste ejercicios de ${esc(pgrupo)}.` : "Guardá tu primer ejercicio en Registrar."}</div>`;
+}
+
+/* ---------- HISTORIAL ---------- */
+function renderHist() {
+  chipRow($("#hgrupos"), hgrupo, true);
+  const week = entries.filter(e => { const d = daysAgo(e.fecha); return d >= 0 && d < 7; });
+  $("#semana").innerHTML = `
+    <div><b>${new Set(week.map(e => e.fecha)).size}</b><small>días</small></div>
+    <div><b>${week.reduce((a, e) => a + e.series.length, 0)}</b><small>series</small></div>
+    <div><b>${f(week.reduce((a, e) => a + vol(e), 0) / 1000)}<span style="font-size:1.1rem"> t</span></b><small>de volumen</small></div>`;
+
+  const list = entries.filter(e => !hgrupo || e.grupo === hgrupo).sort(byDate).reverse();
+  if (!list.length) { $("#historial").innerHTML = `<div class="panel empty" style="margin-top:16px"><b>Sin entrenamientos</b>Lo que guardes en Registrar aparece acá, ordenado por día.</div>`; return; }
+
+  const days = new Map();
+  list.forEach(e => { if (!days.has(e.fecha)) days.set(e.fecha, []); days.get(e.fecha).push(e); });
+  let html = "";
+  days.forEach((items, fecha) => {
+    const v = items.reduce((a, e) => a + vol(e), 0), n = items.reduce((a, e) => a + e.series.length, 0);
+    html += `<div class="dayhead"><h3>${fmtDay(fecha)}</h3><span>${items.length} ${items.length === 1 ? "ejercicio" : "ejercicios"}, ${n} ${n === 1 ? "serie" : "series"}, ${f(v)} kg</span></div><div class="rows">`;
+    items.forEach(e => {
+      html += `<div class="entry" style="--g:${GROUP_COLOR[e.grupo] || "var(--steel)"}">
+        <span class="stripe"></span>
+        <div>
+          <div class="t">${esc(e.ejercicio)}<span class="g">${esc(e.grupo)}</span></div>
+          <div class="sets">${e.series.map(s => `${f(s.peso)}×${s.reps}`).join("<span>/</span>")}</div>
+          <div class="meta">1RM estimado ${f(e1rm(e))} kg, volumen ${f(vol(e))} kg</div>
+          ${e.nota ? `<div class="nota">“${esc(e.nota)}”</div>` : ""}
+        </div>
+        <button class="rm" data-rm="${esc(e.id)}" aria-label="Borrar ${esc(e.ejercicio)} del ${fmtShort(e.fecha)}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13"/></svg>
+        </button>
+      </div>`;
+    });
+    html += `</div>`;
+  });
+  $("#historial").innerHTML = html;
+}
+
+function renderDate() {
+  const v = $("#fecha").value, isToday = v === today();
+  const txt = longDate(v);
+  $("#dateText").innerHTML = isToday ? `<b>Hoy</b>, ${txt}` : `<b>${txt.charAt(0).toUpperCase() + txt.slice(1)}</b>`;
+  $("#btnDate").textContent = isToday ? "Cambiar" : "Volver a hoy";
+  $("#dateBox").classList.toggle("other", !isToday);
+}
+function renderQuote() {
+  $("#quote").innerHTML = `<p>${esc(FRASES[dayNumber() % FRASES.length])}</p><small>Frase del día</small>`;
+}
+// si la app queda abierta y cambia el día, la fecha se actualiza sola
+function checkNewDay() {
+  if (!fechaManual && $("#fecha").value !== today()) { $("#fecha").value = today(); renderDate(); renderHist(); }
+  renderQuote();
+}
+
+function renderAll() { renderExSelect(); renderTarget(); renderProgress(); renderHist(); }
+
+/* ---------- persona / pestañas ---------- */
+function setPersona(p) {
+  persona = p; lsSet("gymlog_persona", p);
+  document.body.dataset.p = p;
+  document.querySelectorAll("#people button").forEach(b => b.setAttribute("aria-pressed", b.dataset.p === p));
+  if (unsubEntries) unsubEntries();
+  entries = []; selEx = "";
+  renderAll();
+  unsubEntries = store.listenEntries(p, data => { entries = data; renderAll(); });
+}
+function setTab(t) {
+  currentTab = t;
+  document.querySelectorAll("#tabs button").forEach(b => b.dataset.tab === t ? b.setAttribute("aria-current", "page") : b.removeAttribute("aria-current"));
+  document.querySelectorAll(".tab").forEach(s => s.classList.toggle("on", s.id === "tab-" + t));
+  if (t === "progreso") renderChart();
+  window.scrollTo({ top: 0 });
+}
+
+/* ---------- eventos ---------- */
+function bind() {
+  $("#people").addEventListener("click", e => { const b = e.target.closest("button"); if (b && b.dataset.p !== persona) setPersona(b.dataset.p); });
+  $("#tabs").addEventListener("click", e => { const b = e.target.closest("button"); if (b) setTab(b.dataset.tab); });
+
+  $("#grupos").addEventListener("click", e => {
+    const b = e.target.closest(".chip"); if (!b) return;
+    grupo = b.dataset.v; renderGrupos(); renderExSelect(); renderTarget();
+  });
+  $("#ejercicio").addEventListener("change", renderTarget);
+
+  $("#btnNewEx").addEventListener("click", () => { $("#newex").classList.toggle("show"); $("#newexName").focus(); });
+  const saveEx = () => {
+    const nombre = $("#newexName").value.trim(); if (!nombre) return;
+    const existing = exList(grupo).find(x => x.toLowerCase() === nombre.toLowerCase());
+    if (!existing) {
+      customEx.push({ grupo, nombre });
+      store.addExercise({ grupo, nombre }).catch(err => toast("No se pudo agregar: " + err.message, "err"));
+    }
+    renderExSelect(); $("#ejercicio").value = existing || nombre;
+    $("#newexName").value = ""; $("#newex").classList.remove("show");
+    renderTarget(); toast(existing ? `${existing} ya estaba en ${grupo}` : `${nombre} agregado a ${grupo}`);
+  };
+  $("#btnSaveEx").addEventListener("click", saveEx);
+  $("#newexName").addEventListener("keydown", e => { if (e.key === "Enter") saveEx(); });
+
+  $("#target").addEventListener("click", e => {
+    const b = e.target.closest("[data-act]"); if (!b) return;
+    const h = history($("#ejercicio").value); if (!h.length) return;
+    const last = h[h.length - 1];
+    if (b.dataset.act === "rep") sets = last.series.map(s => ({ peso: s.peso, reps: s.reps }));
+    else { const s = suggestion(h); sets = last.series.map(() => ({ peso: s.peso, reps: s.reps })); }
+    renderSets();
+  });
+
+  $("#sets").addEventListener("input", e => {
+    const row = e.target.closest(".setrow"); if (!row || !e.target.dataset.k) return;
+    sets[+row.dataset.i][e.target.dataset.k] = e.target.value; renderSetSum();
+  });
+  $("#sets").addEventListener("click", e => {
+    const b = e.target.closest("[data-del]"); if (!b) return;
+    sets.splice(+b.dataset.del, 1); if (!sets.length) sets = [{ peso: "", reps: "" }]; renderSets();
+  });
+  $("#btnAddSet").addEventListener("click", () => {
+    const l = sets[sets.length - 1] || { peso: "", reps: "" };
+    sets.push({ peso: l.peso, reps: l.reps }); renderSets();
+    const ins = document.querySelectorAll('#sets [data-k="reps"]'); ins[ins.length - 1]?.select();
+  });
+  $("#btnGuardar").addEventListener("click", guardar);
+
+  $("#pej").addEventListener("change", e => { selEx = e.target.value; renderChart(); });
+  $("#metric").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    metric = b.dataset.m;
+    document.querySelectorAll("#metric button").forEach(x => x.setAttribute("aria-pressed", x === b));
+    renderChart();
+  });
+  $("#pgrupos").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) { pgrupo = b.dataset.v; renderResumen(); } });
+  $("#resumen").addEventListener("click", e => {
+    const it = e.target.closest(".exrow"); if (!it) return;
+    selEx = it.dataset.ex; $("#pej").value = selEx; renderChart();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  $("#hgrupos").addEventListener("click", e => { const b = e.target.closest(".chip"); if (b) { hgrupo = b.dataset.v; renderHist(); } });
+  $("#historial").addEventListener("click", e => {
+    const b = e.target.closest("[data-rm]"); if (!b) return;
+    if (confirm("¿Borrar este registro? No se puede deshacer.")) store.removeEntry(b.dataset.rm).then(() => toast("Registro borrado")).catch(err => toast("No se pudo borrar: " + err.message, "err"));
+  });
+
+  $("#btnDate").addEventListener("click", () => {
+    const inp = $("#fecha");
+    if (inp.value !== today()) { inp.value = today(); fechaManual = false; inp.classList.remove("show"); renderDate(); return; }
+    try { inp.showPicker(); } catch { inp.classList.add("show"); inp.focus(); }
+  });
+  $("#fecha").addEventListener("change", e => {
+    if (!e.target.value) e.target.value = today();
+    fechaManual = e.target.value !== today();
+    e.target.classList.remove("show"); renderDate();
+  });
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) checkNewDay(); });
+  window.addEventListener("focus", checkNewDay);
+  setInterval(checkNewDay, 60000);
+
+  matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change", () => renderChart());
+}
+
+/* ---------- inicio ---------- */
+async function init() {
+  $("#fecha").value = today();
+  renderDate(); renderQuote();
+  renderGrupos(); renderSets(); bind();
+  try { store = await makeStore(); }
+  catch (err) {
+    store = localStore();
+    showBanner(`No se pudo conectar a Firebase (${esc(err.message)}). Mientras tanto, los datos se guardan en este navegador.`, true);
+  }
+  const mode = $("#mode");
+  if (store.mode === "firebase") {
+    mode.classList.add("live");
+    mode.lastElementChild.innerHTML = `Sincronizado <button class="linkbtn" id="btnLogout">Salir</button>`;
+    $("#btnLogout").addEventListener("click", () => { if (confirm("¿Cerrar sesión en este dispositivo?")) store.auth.signOut(); });
+    let denied = false;
+    $("#btnLogin").addEventListener("click", async () => {
+      try {
+        if (denied) await store.auth.signOut();
+        await store.auth.signIn();
+      } catch (err) {
+        if (err.code === "auth/popup-closed-by-user" || err.code === "auth/cancelled-popup-request") return;
+        $("#gateMsg").textContent = err.code === "auth/unauthorized-domain"
+          ? `Este dominio no está autorizado. En Firebase, andá a Authentication, Configuración, Dominios autorizados y agregá ${location.hostname}.`
+          : `No se pudo iniciar sesión (${err.code || err.message}).`;
+      }
+    });
+    store.auth.onChange(user => {
+      const email = (user?.email || "").toLowerCase();
+      const quien = USUARIOS[email];
+      if (!user || !quien) {
+        stopListening();
+        denied = !!user;
+        $("#gateMsg").textContent = user
+          ? `La cuenta ${user.email} no tiene acceso. Entrá con la cuenta de Keila o la de Santiago.`
+          : "Entrá con tu cuenta de Google para ver y cargar tus entrenamientos.";
+        $("#btnLoginTxt").textContent = user ? "Entrar con otra cuenta" : "Entrar con Google";
+        $("#gate").hidden = false;
+        return;
+      }
+      $("#gate").hidden = true;
+      startListening(quien);
+    });
+  } else {
+    mode.lastElementChild.textContent = "Modo local";
+    if (!$("#banner").innerHTML) showBanner("Estás en modo local: los datos quedan solo en este navegador. Para usarla desde los dos celulares, pegá la configuración de Firebase en el código.");
+    startListening(persona);
+  }
+}
+
+function startListening(p) {
+  if (!unsubEx) unsubEx = store.listenExercises(data => { customEx = data; renderExSelect(); renderTarget(); });
+  setPersona(p);
+}
+function stopListening() {
+  if (unsubEntries) { unsubEntries(); unsubEntries = null; }
+  if (unsubEx) { unsubEx(); unsubEx = null; }
+  entries = []; customEx = [];
+}
+init();
+</script>
+</body>
+</html>
